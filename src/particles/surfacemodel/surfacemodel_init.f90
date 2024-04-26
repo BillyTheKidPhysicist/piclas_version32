@@ -71,9 +71,15 @@ USE MOD_Particle_Vars          ,ONLY: nSpecies,Species,usevMPF
 USE MOD_ReadInTools            ,ONLY: GETINT,GETREAL,GETLOGICAL,GETSTR,GETREALARRAY
 USE MOD_Particle_Boundary_Vars ,ONLY: nPartBound,PartBound
 USE MOD_SurfaceModel_Vars      ,ONLY: BulkElectronTempSEE,SurfModSEEelectronTempAutoamtic
-USE MOD_SurfaceModel_Vars      ,ONLY: SurfModResultSpec,SurfModEnergyDistribution,SurfModEmissionEnergy,SurfModEmissionYield,MaximumCurrent,YieldErrorFact
+USE MOD_SurfaceModel_Vars      ,ONLY: SurfModResultSpec,SurfModEnergyDistribution,SurfModEmissionEnergy,SurfModEmissionYield
 USE MOD_SurfaceModel_Vars      ,ONLY: SurfModSEEPowerFit
 USE MOD_Particle_Vars          ,ONLY: CalcBulkElectronTemp,BulkElectronTemp
+
+!billy
+USE MOD_SurfaceModel_Analyze_Vars ,ONLY: SEE
+USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,YieldChangeSmoothFact
+
+
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! IMPLICIT VARIABLE HANDLING
 IMPLICIT NONE
