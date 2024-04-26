@@ -29,6 +29,12 @@ SAVE
 INTEGER , ALLOCATABLE            :: SurfModResultSpec(:,:)          ! Resulting species after surface model treatment
                                                                     ! (nPartBound,nSpecies)
 CHARACTER(LEN=50) , ALLOCATABLE  :: SurfModEnergyDistribution(:)    ! Energy distribution of the reflected/created particle(s)
+
+!billy
+REAL, ALLOCATABLE    :: MaximumCurrent(:)
+REAL, ALLOCATABLE    :: YieldErrorFact(:)
+
+
 REAL , ALLOCATABLE               :: SurfModEmissionEnergy(:)        ! Energy of emitted particle for surface emission model (only available for SurfaceModel=7)
 REAL , ALLOCATABLE               :: SurfModEmissionYield(:)         ! Emission yield factor for surface emission model (only changable for SurfaceModel=7)
 REAL                             :: BackupVeloABS                   ! Backup of velocity during double-ARMfor 2nd SEE
