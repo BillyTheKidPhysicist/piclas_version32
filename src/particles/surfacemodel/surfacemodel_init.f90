@@ -77,7 +77,7 @@ USE MOD_Particle_Vars          ,ONLY: CalcBulkElectronTemp,BulkElectronTemp
 
 !billy
 USE MOD_SurfaceModel_Analyze_Vars ,ONLY: SEE
-USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,YieldChangeSmoothFact
+USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,YieldErrorFact
 
 
 !-----------------------------------------------------------------------------------------------------------------------------------
