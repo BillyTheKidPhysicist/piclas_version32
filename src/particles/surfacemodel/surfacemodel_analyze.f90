@@ -292,12 +292,10 @@ IF (CalcElectronSEE)            CALL SyncElectronSEE()
 !===================================================================================================================================
 ! Output Analyzed variables
 !===================================================================================================================================
-#if USE_MPI
-IF(MPIRoot)THEN
-
 !billy
 total_current=0.0
-
+#if USE_MPI
+IF(MPIRoot)THEN
 #endif /*USE_MPI*/
   WRITE(unit_index,'(E23.16E3)',ADVANCE='NO') Time
   IF(CalcSurfCollCounter)THEN
@@ -359,12 +357,6 @@ total_current=0.0
           !billy
           !assign total current to root process
           SEE%total_current=total_current
-          #if USE_MPI 
-            CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
-            !CALL MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror) !for printing I need the rank
-            !print *,'mpi',rank,'current', SEE%total_current
-          #endif /*USE_MPI*/
-
 
           !limit current or yield based on total current
           IF(CalcElectronSEE)THEN
@@ -378,6 +370,16 @@ total_current=0.0
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
             END IF
           END IF 
+
+          !billy
+          !broadcast the new yield to everyone
+          #if USE_MPI 
+            CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
+            CALL MPI_BCAST(SEE%SurfModEmissionYield,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
+            !CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
+          !CALL MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror) !for printing I need the rank
+          !print *,'mpi',rank,'current', SEE%total_current
+          #endif /*USE_MPI*/
 
 
 
