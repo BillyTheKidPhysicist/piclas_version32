@@ -46,6 +46,13 @@ CALL prms%CreateIntOption(     'Part-Species[$]-PartBound[$]-ResultSpec'    , 'R
 CALL prms%CreateStringOption(  'Part-Boundary[$]-SurfModEnergyDistribution' , 'Energy distribution function for surface emission model (only changable for SurfaceModel=7)' , numberedmulti=.TRUE.)
 CALL prms%CreateRealOption(    'Part-Boundary[$]-SurfModEmissionEnergy'     , 'Energy of emitted particle for surface emission model (only available for SurfaceModel=7)' , numberedmulti=.TRUE.)
 CALL prms%CreateRealOption(    'Part-Boundary[$]-SurfModEmissionYield'      , 'Emission yield factor for surface emission model (only changable for SurfaceModel=7)' , numberedmulti=.TRUE.)
+
+
+!billy 
+CALL prms%CreateRealOption(    'Part-Boundary[$]-MaximumCurrent'      , 'Maximum allowed current' , numberedmulti=.True.)
+CALL prms%CreateRealOption(    'Part-Boundary[$]-YieldErrorFact'      , 'Factor to smooth yield conversion' , numberedmulti=.True.)
+
+
 CALL prms%CreateRealOption(    'Part-SurfaceModel-SEE-Te'                   , 'Bulk electron temperature for SEE model by Morozov2004 in Kelvin (default corresponds to 50 eV)' , '5.80226250308285e5')
 CALL prms%CreateLogicalOption( 'Part-SurfaceModel-SEE-Te-automatic'         , 'Automatically set the bulk electron temperature by using the global electron temperature for SEE model by Morozov2004' , '.FALSE.')
 
@@ -98,6 +105,12 @@ ALLOCATE(SurfModEmissionYield(1:nPartBound))
 SurfModEmissionYield = 0.
 ALLOCATE(SumOfResultSpec(nPartBound))
 SumOfResultSpec = 0
+
+!billy
+ALLOCATE(MaximumCurrent(1:nPartBound))
+MaximumCurrent = 0.
+ALLOCATE(YieldErrorFact(1:nPartBound))
+YieldErrorFact = 0.
 
 ALLOCATE(SurfModSEEPowerFit(1:2, 1:nPartBound))
 SurfModSEEPowerFit = 0
@@ -155,6 +168,12 @@ DO iPartBound=1,nPartBound
     IF((SurfModEmissionEnergy(iPartBound).LE.0.).AND.(SurfModEnergyDistribution(iPartBound).EQ.'uniform-energy')) CALL abort(&
         __STAMP__,'SEE model with uniform-energy distribution requires Part-BoundaryX-SurfModEmissionEnergy > 0.')
     SurfModEmissionYield(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-SurfModEmissionYield' ,'0.13')
+
+
+          !billy
+    MaximumCurrent(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-MaximumCurrent' ,'0.0')
+    YieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-YieldErrorFact' ,'0.5')
+
   ! 8: SEE-E (e- on dielectric materials is considered for SEE and three different outcomes)
   CASE(8)
     SurfModEnergyDistribution(iPartBound)  = 'Morozov2004'
@@ -166,6 +185,15 @@ DO iPartBound=1,nPartBound
 END DO ! iPartBound=1,nPartBound
 
 DEALLOCATE(SumOfResultSpec)
+
+
+!-billy
+!Assign the default and a changeable value of SEE%SurfModEmissionYield so that it can adapt to the value of current
+!this assumes that the yield is the same for all species
+SEE%SurfModEmissionYield=MAXVAL(SurfModEmissionYield) !only one surface has this value
+SEE%SurfModEmissionYield_0=SEE%SurfModEmissionYield
+SEE%MaximumCurrent=MAXVAL(MaximumCurrent) !take only the maximum value
+SEE%YieldErrorFact=MAXVAL(YieldErrorFact)
 
 ! If SEE model by Morozov is used, read the additional parameter for the electron bulk temperature
 IF(SurfModelElectronTemp)THEN

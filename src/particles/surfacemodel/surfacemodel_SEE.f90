@@ -227,9 +227,10 @@ CASE(7) ! 7: SEE-I (bombarding electrons are removed, Ar+ on different materials
     ! is 0.13 probability, see  D. Depla, Magnetron sputter deposition: Linking discharge voltage with target properties, 2009)
 
     ! If yield is greater than 1, store the leading integer here
-    IF(SurfModEmissionYield(locBCID).GE.1.0) ProductSpecNbr = INT(SurfModEmissionYield(locBCID))
+    !billy
+    IF(SEE%SurfModEmissionYield.GE.1.0) ProductSpecNbr = INT(SEE%SurfModEmissionYield)
     CALL RANDOM_NUMBER(iRan)
-    IF(iRan.LT.MOD(SurfModEmissionYield(locBCID), 1.0) ) ProductSpecNbr = ProductSpecNbr + 1 ! Create one additional new particle
+    IF(iRan.LT.MOD(SEE%SurfModEmissionYield, 1.0) ) ProductSpecNbr = ProductSpecNbr + 1 ! Create one additional new particle
 
     IF(ProductSpecNbr.GT.0)THEN
       ProductSpec(2) = SurfModResultSpec(locBCID,SpecID)  ! Species of the injected electron
