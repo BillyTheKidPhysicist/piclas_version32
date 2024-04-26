@@ -71,6 +71,14 @@ TYPE tSEE
   INTEGER             :: NPartBoundaries    !< Total number of boundaries where the particles are counted
   INTEGER,ALLOCATABLE :: PartBoundaries(:)  !< Part-boundary number on which the particles are counted
   INTEGER,ALLOCATABLE :: BCIDToSEEBCID(:)   !< Mapping BCID to iSEE (1:nPartBound)
+
+  !billy
+  REAL                :: total_current    !total current across SEE surfaces
+  REAL                :: MaximumCurrent    !maximum current across SEE surfaces
+  REAL                :: SurfModEmissionYield_0 !original value of surface yield
+  REAL                :: SurfModEmissionYield !current value of emission yield
+  REAL                :: YieldErrorFact !factor that controls the error correction in proportional term
+
 END TYPE
 
 TYPE(tSEE)   :: SEE

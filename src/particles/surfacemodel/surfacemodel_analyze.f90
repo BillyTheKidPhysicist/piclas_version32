@@ -178,6 +178,12 @@ INTEGER             :: unit_index, OutputCounter
 INTEGER             :: SurfCollNum(nSpecies),AdsorptionNum(nSpecies),DesorptionNum(nSpecies)
 INTEGER             :: iBC,iPartBound,iSEE,iBPO,iSpec
 REAL                :: charge,TotalElectricCharge
+
+!billy 
+!to log total current for assigning to all other processors
+REAL                :: total_current,TargetYield,DeltaYield
+
+
 #if USE_HDG
 INTEGER             :: iEDCBC,i,iBoundary,iPartBound2
 #endif /*USE_HDG*/
@@ -288,6 +294,10 @@ IF (CalcElectronSEE)            CALL SyncElectronSEE()
 !===================================================================================================================================
 #if USE_MPI
 IF(MPIRoot)THEN
+
+!billy
+total_current=0.0
+
 #endif /*USE_MPI*/
   WRITE(unit_index,'(E23.16E3)',ADVANCE='NO') Time
   IF(CalcSurfCollCounter)THEN
@@ -340,8 +350,39 @@ IF(MPIRoot)THEN
             iSEE = SEE%BCIDToSEEBCID(iPartBound)
             ! Add SEE current if this BC has secondary electron emission
             IF(iSEE.GT.0) TotalElectricCharge = TotalElectricCharge + SEE%RealElectronOut(iSEE)
+
+            !billy
+            total_current=total_current+SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
+
           END IF ! CalcElectronSEE
+             
+          !billy
+          !assign total current to root process
+          SEE%total_current=total_current
+          #if USE_MPI 
+            CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
+            !CALL MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror) !for printing I need the rank
+            !print *,'mpi',rank,'current', SEE%total_current
+          #endif /*USE_MPI*/
+
+
+          !limit current or yield based on total current
+          IF(CalcElectronSEE)THEN
+            IF(SEE%total_current .GE. SEE%MaximumCurrent)THEN !if too much current, reduce yield
+              TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/SEE%total_current
+              DeltaYield=TargetYield-SEE%SurfModEmissionYield
+              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
+            ELSE !if there is not excess current, increase yield towards its original value
+              TargetYield=SEE%SurfModEmissionYield_0
+              DeltaYield=TargetYield-SEE%SurfModEmissionYield
+              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
+            END IF
+          END IF 
+
+
+
           TotalElectricCharge = TotalElectricCharge/SurfModelAnalyzeSampleTime
+
 #if USE_HDG
           ! Add electric displacement current to total electric current
           IF(CalcElectricTimeDerivative)THEN
