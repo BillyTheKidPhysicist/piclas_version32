@@ -639,8 +639,12 @@ END DO
 !-------------------------------------------------------------------------------------------------------------------------------
 ! Adding the vibrational and rotational energy to the collision energy
 !-------------------------------------------------------------------------------------------------------------------------------
-Coll_pData(iPair)%Ec = Coll_pData(iPair)%Ec + (PartStateIntEn(2,ReactInx(1)) + PartStateIntEn(1,ReactInx(1)))*Weight(1) &
-                      + (PartStateIntEn(2,ReactInx(2)) + PartStateIntEn(1,ReactInx(2)))*Weight(2)
+
+!billy
+!bug with vibrational energy, here I comment out the addition of vibrational energy
+!Coll_pData(iPair)%Ec = Coll_pData(iPair)%Ec + (PartStateIntEn(2,ReactInx(1)) + PartStateIntEn(1,ReactInx(1)))*Weight(1) &
+!                      + (PartStateIntEn(2,ReactInx(2)) + PartStateIntEn(1,ReactInx(2)))*Weight(2)
+
 !-------------------------------------------------------------------------------------------------------------------------------
 ! Addition of the electronic energy to the collision energy)
 !-------------------------------------------------------------------------------------------------------------------------------
