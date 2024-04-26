@@ -297,7 +297,6 @@ total_current=0.0
 #if USE_MPI
 IF(MPIRoot)THEN
 #endif /*USE_MPI*/
-print *, 'here'
   WRITE(unit_index,'(E23.16E3)',ADVANCE='NO') Time
   IF(CalcSurfCollCounter)THEN
     CALL WriteDataInfo(unit_index,nSpecies,IntegerArray=SurfCollNum(:))
@@ -352,10 +351,7 @@ print *, 'here'
 
             !billy
             total_current=total_current+SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
-
-          END IF ! CalcElectronSEE
-             
-          !billy
+                      !billy
           !assign total current to root process
           SEE%total_current=total_current
 
@@ -382,6 +378,10 @@ print *, 'here'
               !CALL MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror) !for printing I need the rank
               !print *,'mpi',rank,'current', SEE%total_current
 #endif /*USE_MPI*/
+
+          END IF ! CalcElectronSEE
+             
+
 
 
 
