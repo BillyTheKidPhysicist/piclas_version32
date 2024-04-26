@@ -371,7 +371,6 @@ IF(MPIRoot)THEN
           !billy
           !broadcast the new yield to everyone
 #if USE_MPI 
-              print *,'CURRENTS', SEE%total_current, SEE%MaximumCurrent
               CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
               CALL MPI_BCAST(SEE%SurfModEmissionYield,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
               !CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
