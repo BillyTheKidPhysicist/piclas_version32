@@ -379,8 +379,8 @@ IF(MPIRoot)THEN
           !billy
           !broadcast the new yield to everyone
 #if USE_MPI 
-              print *, 'yield updated', SEE%SurfModEmissionYield
               CALL MPI_BCAST(SEE%SurfModEmissionYield,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
+              print *, 'yield updated', SEE%SurfModEmissionYield
               !CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
               !CALL MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror) !for printing I need the rank
               !print *,'mpi',rank,'current', SEE%total_current
