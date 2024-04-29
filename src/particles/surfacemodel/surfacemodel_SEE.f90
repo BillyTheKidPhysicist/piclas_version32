@@ -41,7 +41,7 @@ USE MOD_Globals_Vars              ,ONLY: c,c2,Joule2eV
 USE MOD_Particle_Vars             ,ONLY: PartState,Species,PartSpecies,PartMPF,nSpecies
 USE MOD_Globals_Vars              ,ONLY: ElementaryCharge,ElectronMass
 USE MOD_SurfaceModel_Vars         ,ONLY: BulkElectronTempSEE
-USE MOD_SurfaceModel_Vars         ,ONLY: SurfModResultSpec,SurfModEmissionYield,SurfModEmissionEnergy,SurfModEnergyDistribution
+USE MOD_SurfaceModel_Vars         ,ONLY: SurfModResultSpec,SurfModEmissionEnergy,SurfModEnergyDistribution
 USE MOD_SurfaceModel_Vars         ,ONLY: SurfModSEEPowerFit
 USE MOD_Particle_Boundary_Vars    ,ONLY: PartBound
 USE MOD_SurfaceModel_Analyze_Vars ,ONLY: CalcElectronSEE,SEE
@@ -228,6 +228,7 @@ CASE(7) ! 7: SEE-I (bombarding electrons are removed, Ar+ on different materials
 
     ! If yield is greater than 1, store the leading integer here
     !billy
+    SEE%SurfModEmissionYield
     IF(SEE%SurfModEmissionYield.GE.1.0) ProductSpecNbr = INT(SEE%SurfModEmissionYield)
     CALL RANDOM_NUMBER(iRan)
     IF(iRan.LT.MOD(SEE%SurfModEmissionYield, 1.0) ) ProductSpecNbr = ProductSpecNbr + 1 ! Create one additional new particle
