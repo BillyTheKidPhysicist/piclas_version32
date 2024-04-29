@@ -178,7 +178,7 @@ DO iPartBound=1,nPartBound
 
           !billy
     MaximumCurrent(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-MaximumCurrent' ,'0.0')
-    YieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-YieldErrorFact' ,'0.5')
+    YieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-YieldErrorFact' ,'1.0')
 
   ! 8: SEE-E (e- on dielectric materials is considered for SEE and three different outcomes)
   CASE(8)

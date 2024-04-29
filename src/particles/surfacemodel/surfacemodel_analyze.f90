@@ -362,15 +362,15 @@ IF(MPIRoot)THEN
 
 
             !apply proportional feedback
-            IF(SEE%total_current .GE. SEE%MaximumCurrent)THEN !if too much current, reduce yield
-              TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/SEE%total_current
-              DeltaYield=TargetYield-SEE%SurfModEmissionYield
-              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
-            ELSE !if there is not excess current, increase yield towards its original value
-              TargetYield=SEE%SurfModEmissionYield_0
-              DeltaYield=TargetYield-SEE%SurfModEmissionYield
-              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
-            END IF
+            !IF(SEE%total_current .GE. SEE%MaximumCurrent)THEN !if too much current, reduce yield
+            !  TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/SEE%total_current
+            !  DeltaYield=TargetYield-SEE%SurfModEmissionYield
+            !  SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
+            !ELSE !if there is not excess current, increase yield towards its original value
+            !  TargetYield=SEE%SurfModEmissionYield_0
+            !  DeltaYield=TargetYield-SEE%SurfModEmissionYield
+            !  SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
+            !END IF
 
             !apply integral feedback
             !update exponential average current
@@ -386,7 +386,7 @@ IF(MPIRoot)THEN
             IF(NewIntegralYield>SEE%SurfModEmissionYield)THEN !if yield is too large, set to default value
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
             ELSE
-              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+DeltaYield
+              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
             END IF 
           END IF ! CalcElectronSEE
              
