@@ -383,7 +383,7 @@ IF(MPIRoot)THEN
             DeltaYield=DeltaYield/MeanWindow
             NewIntegralYield=SEE%SurfModEmissionYield+DeltaYield
             !apply the new yield delta
-            IF(NewIntegralYield>SEE%SurfModEmissionYield)THEN !if yield is too large, set to default value
+            IF(NewIntegralYield>SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
             ELSE
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
