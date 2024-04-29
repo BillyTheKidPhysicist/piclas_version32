@@ -17,6 +17,10 @@ MODULE MOD_SurfaceModel_Analyze
 IMPLICIT NONE
 #ifdef PARTICLES
 PRIVATE
+!billy
+REAL                :: CurrentMean=0.0 !Exponential average current
+INTEGER             :: MeanWindow=10 
+
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! GLOBAL VARIABLES
 !-----------------------------------------------------------------------------------------------------------------------------------
@@ -181,7 +185,7 @@ REAL                :: charge,TotalElectricCharge
 
 !billy 
 !to log total current for assigning to all other processors
-REAL                :: total_current,TargetYield,DeltaYield
+REAL                :: total_current,TargetYield,DeltaYield,NewIntegralYield
 
 
 #if USE_HDG
@@ -357,6 +361,10 @@ IF(MPIRoot)THEN
 
           !limit current or yield based on total current
           IF(CalcElectronSEE)THEN
+
+            
+
+            !apply proportional feedback
             IF(SEE%total_current .GE. SEE%MaximumCurrent)THEN !if too much current, reduce yield
               TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/SEE%total_current
               DeltaYield=TargetYield-SEE%SurfModEmissionYield
@@ -366,6 +374,23 @@ IF(MPIRoot)THEN
               DeltaYield=TargetYield-SEE%SurfModEmissionYield
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
             END IF
+
+            !apply integral feedback
+            !update exponential average current
+            CurrentMean=CurrentMean-CurrentMean/MeanWindow
+            CurrentMean=CurrentMean+SEE%total_current/MeanWindow
+            
+            !find the new delta yield
+            TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
+            DeltaYield=TargetYield-SEE%SurfModEmissionYield
+            DeltaYield=DeltaYield/MeanWindow
+            NewIntegralYield=SEE%SurfModEmissionYield+DeltaYield
+            !apply the new yield delta
+            IF(NewIntegralYield>SEE%SurfModEmissionYield)THEN !if yield is too large, set to default value
+              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
+            ELSE
+              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+DeltaYieldIntegral
+
           END IF 
 
           !billy
@@ -488,6 +513,7 @@ END IF
 !-----------------------------------------------------------------------------------------------------------------------------------
 SurfModelAnalyzeSampleTime = Time ! Backup "old" time value for next output
 
+!billy
 IF(CalcElectronSEE)THEN
 #if USE_MPI 
               CALL MPI_BCAST(SEE%SurfModEmissionYield,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
