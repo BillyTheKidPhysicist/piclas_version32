@@ -356,14 +356,20 @@ IF(MPIRoot)THEN
           SEE%total_current=total_current
 
           !limit current or yield based on total current
+          print *, '--------------------------------------------------------------'
           IF(CalcElectronSEE)THEN
+            print *,'current', SEE%total_current, SEE%MaximumCurrent
             IF(SEE%total_current .GE. SEE%MaximumCurrent)THEN !if too much current, reduce yield
               TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/SEE%total_current
+              print *, 'TargetYield', TargetYield
               DeltaYield=TargetYield-SEE%SurfModEmissionYield
+              print *, 'DeltaYield', DeltaYield
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
             ELSE !if there is not excess current, increase yield towards its original value
               TargetYield=SEE%SurfModEmissionYield_0
+              print *, 'TargetYield', TargetYield
               DeltaYield=TargetYield-SEE%SurfModEmissionYield
+              print *, 'DeltaYield', DeltaYield
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
             END IF
           END IF 
@@ -371,7 +377,7 @@ IF(MPIRoot)THEN
           !billy
           !broadcast the new yield to everyone
 #if USE_MPI 
-              print *, 'yield updated', SEE%SurfModEmissionYield,total_current,SEE%MaximumCurrent
+              print *, 'yield updated', SEE%SurfModEmissionYield
               CALL MPI_BCAST(SEE%SurfModEmissionYield,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
               !CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
               !CALL MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror) !for printing I need the rank

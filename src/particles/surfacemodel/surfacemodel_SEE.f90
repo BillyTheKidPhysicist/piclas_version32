@@ -228,7 +228,6 @@ CASE(7) ! 7: SEE-I (bombarding electrons are removed, Ar+ on different materials
 
     ! If yield is greater than 1, store the leading integer here
     !billy
-    print *, 'yield', SEE%SurfModEmissionYield
     IF(SEE%SurfModEmissionYield.GE.1.0) ProductSpecNbr = INT(SEE%SurfModEmissionYield)
     CALL RANDOM_NUMBER(iRan)
     IF(iRan.LT.MOD(SEE%SurfModEmissionYield, 1.0) ) ProductSpecNbr = ProductSpecNbr + 1 ! Create one additional new particle
