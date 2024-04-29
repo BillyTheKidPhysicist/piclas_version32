@@ -365,12 +365,14 @@ IF(MPIRoot)THEN
               DeltaYield=TargetYield-SEE%SurfModEmissionYield
               print *, 'DeltaYield', DeltaYield
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
+              print *, 'new updated', SEE%SurfModEmissionYield
             ELSE !if there is not excess current, increase yield towards its original value
               TargetYield=SEE%SurfModEmissionYield_0
               print *, 'TargetYield', TargetYield
               DeltaYield=TargetYield-SEE%SurfModEmissionYield
               print *, 'DeltaYield', DeltaYield
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
+              print *, 'new updated', SEE%SurfModEmissionYield
             END IF
           END IF 
 
