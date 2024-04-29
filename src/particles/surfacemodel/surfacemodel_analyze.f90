@@ -390,8 +390,6 @@ IF(MPIRoot)THEN
             END IF 
 
             IF(SEE%SurfModEmissionYield .LT. 0) SEE%SurfModEmissionYield=0 !can not be less than zero
-
-            print *, 'Current mean: ', CurrentMean
           END IF ! CalcElectronSEE
              
 
