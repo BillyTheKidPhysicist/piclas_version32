@@ -386,7 +386,7 @@ IF(MPIRoot)THEN
             IF(NewIntegralYield>SEE%SurfModEmissionYield)THEN !if yield is too large, set to default value
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
             ELSE
-              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+DeltaYieldIntegral
+              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+DeltaYield
             END IF 
           END IF ! CalcElectronSEE
              
