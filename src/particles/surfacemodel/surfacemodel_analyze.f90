@@ -388,6 +388,8 @@ IF(MPIRoot)THEN
             ELSE
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%YieldErrorFact*DeltaYield
             END IF 
+            print *, 'current', total_current, 'current mean',CurrentMean,'yield', SEE%SurfModEmissionYield
+            print *, 'deltayield', DeltaYield, 'New integral yield', NewIntegralYield
           END IF ! CalcElectronSEE
              
 
