@@ -359,10 +359,7 @@ IF(MPIRoot)THEN
           !assign total current to root process
           SEE%total_current=total_current
 
-          !limit current or yield based on total current
-          IF(CalcElectronSEE)THEN
 
-            
 
             !apply proportional feedback
             IF(SEE%total_current .GE. SEE%MaximumCurrent)THEN !if too much current, reduce yield
@@ -390,12 +387,7 @@ IF(MPIRoot)THEN
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
             ELSE
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+DeltaYieldIntegral
-
-          END IF 
-
-          !billy
-          !broadcast the new yield to everyone
-
+            END IF 
           END IF ! CalcElectronSEE
              
 
