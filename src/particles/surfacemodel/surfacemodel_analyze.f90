@@ -356,8 +356,6 @@ IF(MPIRoot)THEN
             !billy
             total_current=total_current+SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
                       !billy
-          !assign total current to root process
-          SEE%total_current=total_current
 
 
 
@@ -375,7 +373,7 @@ IF(MPIRoot)THEN
             !apply integral feedback
             !update exponential average current
             CurrentMean=CurrentMean-CurrentMean/MeanWindow
-            CurrentMean=CurrentMean+SEE%total_current/MeanWindow
+            CurrentMean=CurrentMean+total_current/MeanWindow
             
             !find the new delta yield
             TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
