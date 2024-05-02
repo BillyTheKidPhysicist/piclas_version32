@@ -1639,7 +1639,7 @@ IF (iter.GT.0 .AND. HDGSkip.NE.0) THEN
   IF (t.LT.HDGSkip_t0) THEN
     IF (MOD(iter,INT(HDGSkipInit,8)).NE.0) RETURN
   ELSE
-    IF (MOD(iter,INT(HDGSkip,8)).NE.0) RETURN
+    IF (MOD(iter,INT(HDGSkip,8)).EQ.0) RETURN
   END IF
 #if (PP_TimeDiscMethod==501) || (PP_TimeDiscMethod==502) || (PP_TimeDiscMethod==506)
   IF (iStage.GT.1) THEN
