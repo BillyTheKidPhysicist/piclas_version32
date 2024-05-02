@@ -95,7 +95,9 @@ CALL extrae_eventandcounters(int(9000001), int8(0))
 #endif /*EXTRAE*/
 #endif /*PARTICLES*/
 
-CALL HDG(time,U,iter)
+IF (MOD(iter,2)==0) THEN
+  CALL HDG(time,U,iter)
+END IF
 
 #ifdef PARTICLES
 #ifdef EXTRAE
