@@ -501,7 +501,7 @@ END IF
 CurrentMean=CurrentMean-CurrentMean/SEE%MeanWindow
 CurrentMean=CurrentMean+total_current/SEE%MeanWindow
 
-!find the new delta yield
+!generate the integral feedback
 IF(ABS(CurrentMean).LT.eps)THEN
   IntegralDeltaYield=0.0
 ELSE
@@ -523,6 +523,7 @@ END IF
 
 
 print *, 'current, instant: ', total_current, 'current, mean: ',CurrentMean, 'yield: ', SEE%SurfModEmissionYield
+print *, 'prop yield', ProportionalDeltaYield, 'int yield', IntegralDeltaYield
 #if USE_MPI
 END IF
 #endif /*USE_MPI*/
