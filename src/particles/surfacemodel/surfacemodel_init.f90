@@ -264,6 +264,8 @@ SDEALLOCATE(SurfModEmissionEnergy)
 SDEALLOCATE(SurfModEmissionYield)
 SDEALLOCATE(StickingCoefficientData)
 SDEALLOCATE(SurfModSEEPowerFit)
+SDEALLOCATE(MaximumCurrent)
+SDEALLOCATE(YieldErrorFact)
 END SUBROUTINE FinalizeSurfaceModel
 
 END MODULE MOD_SurfaceModel_Init
