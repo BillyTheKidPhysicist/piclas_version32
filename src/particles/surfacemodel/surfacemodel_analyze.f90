@@ -510,8 +510,8 @@ ELSE
 END IF
 
 
-NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield+ProportionalDeltaYield
-!apply the new yield delta
+!add slow acting integral feedback first
+NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield
 IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
   SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
@@ -522,8 +522,20 @@ END IF
 
 
 
+!add fast acting proportional is there is any "room" to do so
+NewYield=NewYield+ProportionalDeltaYield
+IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
+SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
+ELSE IF(NewYield.LT.0)THEN !if yield is negative
+  SEE%SurfModEmissionYield=0
+ELSE
+  SEE%SurfModEmissionYield=NewYield
+END IF 
+
+
+
+
 print *, 'current, instant: ', total_current, 'current, mean: ',CurrentMean, 'yield: ', SEE%SurfModEmissionYield
-print *, 'prop yield', ProportionalDeltaYield, 'int yield', IntegralDeltaYield
 #if USE_MPI
 END IF
 #endif /*USE_MPI*/
