@@ -50,7 +50,8 @@ CALL prms%CreateRealOption(    'Part-Boundary[$]-SurfModEmissionYield'      , 'E
 
 !billy 
 CALL prms%CreateRealOption(    'Part-Boundary[$]-MaximumCurrent'      , 'Maximum allowed current' , numberedmulti=.True.)
-CALL prms%CreateRealOption(    'Part-Boundary[$]-YieldErrorFact'      , 'Factor to smooth yield conversion' , numberedmulti=.True.)
+CALL prms%CreateRealOption(    'Part-Boundary[$]-IntegralYieldErrorFact'      , 'Integral feedback term to smooth yield conversion' , numberedmulti=.True.)
+CALL prms%CreateRealOption(    'Part-Boundary[$]-ProportionalYieldErrorFact'      , 'Proportional feedback term to smooth yield conversion' , numberedmulti=.True.)
 
 
 CALL prms%CreateRealOption(    'Part-SurfaceModel-SEE-Te'                   , 'Bulk electron temperature for SEE model by Morozov2004 in Kelvin (default corresponds to 50 eV)' , '5.80226250308285e5')
@@ -77,7 +78,7 @@ USE MOD_Particle_Vars          ,ONLY: CalcBulkElectronTemp,BulkElectronTemp
 
 !billy
 USE MOD_SurfaceModel_Analyze_Vars ,ONLY: SEE
-USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,YieldErrorFact
+USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,IntegralYieldErrorFact, ProportionalYieldErrorFact
 
 
 !-----------------------------------------------------------------------------------------------------------------------------------
@@ -115,8 +116,10 @@ SumOfResultSpec = 0
 !billy
 ALLOCATE(MaximumCurrent(1:nPartBound))
 MaximumCurrent = 0.
-ALLOCATE(YieldErrorFact(1:nPartBound))
-YieldErrorFact = 0.
+ALLOCATE(IntegralYieldErrorFact(1:nPartBound))
+IntegralYieldErrorFact = 0.
+ALLOCATE(ProportionalYieldErrorFact(1:nPartBound))
+ProportionalYieldErrorFact=0.0
 
 ALLOCATE(SurfModSEEPowerFit(1:2, 1:nPartBound))
 SurfModSEEPowerFit = 0
@@ -178,7 +181,8 @@ DO iPartBound=1,nPartBound
 
           !billy
     MaximumCurrent(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-MaximumCurrent' ,'0.0')
-    YieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-YieldErrorFact' ,'1.0')
+    IntegralYieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-IntegralYieldErrorFact' ,'1.0')
+    ProportionalYieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-ProportionalYieldErrorFact' ,'0.0')
 
   ! 8: SEE-E (e- on dielectric materials is considered for SEE and three different outcomes)
   CASE(8)
@@ -199,7 +203,8 @@ DEALLOCATE(SumOfResultSpec)
 SEE%SurfModEmissionYield=MAXVAL(SurfModEmissionYield) !only one surface has this value
 SEE%SurfModEmissionYield_0=SEE%SurfModEmissionYield
 SEE%MaximumCurrent=MAXVAL(MaximumCurrent) !take only the maximum value
-SEE%YieldErrorFact=MAXVAL(YieldErrorFact)
+SEE%IntegralYieldErrorFact=MAXVAL(IntegralYieldErrorFact)
+SEE%ProportionalYieldErrorFact=MAXVAL(ProportionalYieldErrorFact)
 
 ! If SEE model by Morozov is used, read the additional parameter for the electron bulk temperature
 IF(SurfModelElectronTemp)THEN
@@ -265,7 +270,8 @@ SDEALLOCATE(SurfModEmissionYield)
 SDEALLOCATE(StickingCoefficientData)
 SDEALLOCATE(SurfModSEEPowerFit)
 SDEALLOCATE(MaximumCurrent)
-SDEALLOCATE(YieldErrorFact)
+SDEALLOCATE(IntegralYieldErrorFact)
+SDEALLOCATE(ProportionalYieldErrorFact)
 END SUBROUTINE FinalizeSurfaceModel
 
 END MODULE MOD_SurfaceModel_Init

@@ -32,7 +32,8 @@ CHARACTER(LEN=50) , ALLOCATABLE  :: SurfModEnergyDistribution(:)    ! Energy dis
 
 !billy
 REAL, ALLOCATABLE    :: MaximumCurrent(:)
-REAL, ALLOCATABLE    :: YieldErrorFact(:)
+REAL, ALLOCATABLE    :: ProportionalYieldErrorFact(:)
+REAL, ALLOCATABLE    :: IntegralYieldErrorFact(:)
 
 
 REAL , ALLOCATABLE               :: SurfModEmissionEnergy(:)        ! Energy of emitted particle for surface emission model (only available for SurfaceModel=7)
