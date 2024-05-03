@@ -379,7 +379,7 @@ IF(MPIRoot)THEN
           IF (iBPO.eq.2)THEN !if anode
             total_current=total_current-TotalElectricCharge
           ELSE !else cathode
-            total_current=total_current-TotalElectricCharge
+            total_current=total_current+TotalElectricCharge
           END IF
 
           CALL WriteDataInfo(unit_index,RealScalar=TotalElectricCharge)
@@ -501,7 +501,6 @@ TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
 IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/MeanWindow
 
 NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield+ProportionalDeltaYield
-print *, 'current:', total_current
 !apply the new yield delta
 IF(NewYield>SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
   SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
@@ -511,7 +510,7 @@ END IF
 
 IF(SEE%SurfModEmissionYield .LT. 0) SEE%SurfModEmissionYield=0 !can not be less than zero. This could otherwise happen
   !with negative current
-
+print *, 'current:', total_current, SEE%SurfModEmissionYield
 #if USE_MPI
 END IF
 #endif /*USE_MPI*/
