@@ -35,6 +35,7 @@ REAL, ALLOCATABLE    :: MaximumCurrent(:)
 REAL, ALLOCATABLE    :: ProportionalYieldErrorFact(:)
 REAL, ALLOCATABLE    :: IntegralYieldErrorFact(:)
 INTEGER,ALLOCATABLE             :: MeanWindow(:)
+INTEGER,ALLOCATABLE             :: MinYieldFact(:)
 
 
 

@@ -79,6 +79,7 @@ TYPE tSEE
   REAL                :: IntegralYieldErrorFact !factor that controls the integral error correction
   REAL                :: ProportionalYieldErrorFact !factors that controls propotional error correction
   REAL                :: MeanWindow !window for exponential averaging of current
+  REAL                :: MinYieldFact !smallest that yield is allowed to shrink to
 
 END TYPE
 
