@@ -80,7 +80,7 @@ USE MOD_Particle_Vars          ,ONLY: CalcBulkElectronTemp,BulkElectronTemp
 
 !billy
 USE MOD_SurfaceModel_Analyze_Vars ,ONLY: SEE
-USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,IntegralYieldErrorFact, ProportionalYieldErrorFact, MeanWindow
+USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,IntegralYieldErrorFact, ProportionalYieldErrorFact, MeanWindow,MinYieldFact
 
 
 !-----------------------------------------------------------------------------------------------------------------------------------
