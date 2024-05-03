@@ -19,7 +19,6 @@ IMPLICIT NONE
 PRIVATE
 !billy
 REAL                :: CurrentMean=0.0 !Exponential average current
-INTEGER             :: MeanWindow=10 
 
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! GLOBAL VARIABLES

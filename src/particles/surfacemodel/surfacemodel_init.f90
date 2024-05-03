@@ -52,6 +52,7 @@ CALL prms%CreateRealOption(    'Part-Boundary[$]-SurfModEmissionYield'      , 'E
 CALL prms%CreateRealOption(    'Part-Boundary[$]-MaximumCurrent'      , 'Maximum allowed current' , numberedmulti=.True.)
 CALL prms%CreateRealOption(    'Part-Boundary[$]-IntegralYieldErrorFact'      , 'Integral feedback term to smooth yield conversion' , numberedmulti=.True.)
 CALL prms%CreateRealOption(    'Part-Boundary[$]-ProportionalYieldErrorFact'      , 'Proportional feedback term to smooth yield conversion' , numberedmulti=.True.)
+CALL prms%CreateRealOption(    'Part-Boundary[$]-MeanWindow'      , 'Exponential averaging window for Integral feedback' , numberedmulti=.True.)
 
 
 CALL prms%CreateRealOption(    'Part-SurfaceModel-SEE-Te'                   , 'Bulk electron temperature for SEE model by Morozov2004 in Kelvin (default corresponds to 50 eV)' , '5.80226250308285e5')
@@ -78,7 +79,7 @@ USE MOD_Particle_Vars          ,ONLY: CalcBulkElectronTemp,BulkElectronTemp
 
 !billy
 USE MOD_SurfaceModel_Analyze_Vars ,ONLY: SEE
-USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,IntegralYieldErrorFact, ProportionalYieldErrorFact
+USE MOD_SurfaceModel_Vars  ,ONLY: MaximumCurrent,IntegralYieldErrorFact, ProportionalYieldErrorFact, MeanWindow
 
 
 !-----------------------------------------------------------------------------------------------------------------------------------
@@ -183,6 +184,7 @@ DO iPartBound=1,nPartBound
     MaximumCurrent(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-MaximumCurrent' ,'0.0')
     IntegralYieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-IntegralYieldErrorFact' ,'1.0')
     ProportionalYieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-ProportionalYieldErrorFact' ,'0.0')
+    MeanWindow(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-MeanWindow' ,'10')
 
   ! 8: SEE-E (e- on dielectric materials is considered for SEE and three different outcomes)
   CASE(8)

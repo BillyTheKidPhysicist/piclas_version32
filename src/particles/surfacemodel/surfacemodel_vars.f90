@@ -30,10 +30,13 @@ INTEGER , ALLOCATABLE            :: SurfModResultSpec(:,:)          ! Resulting 
                                                                     ! (nPartBound,nSpecies)
 CHARACTER(LEN=50) , ALLOCATABLE  :: SurfModEnergyDistribution(:)    ! Energy distribution of the reflected/created particle(s)
 
-!billy
+!billy. 
 REAL, ALLOCATABLE    :: MaximumCurrent(:)
 REAL, ALLOCATABLE    :: ProportionalYieldErrorFact(:)
 REAL, ALLOCATABLE    :: IntegralYieldErrorFact(:)
+INTEGER             :: MeanWindow
+
+
 
 
 REAL , ALLOCATABLE               :: SurfModEmissionEnergy(:)        ! Energy of emitted particle for surface emission model (only available for SurfaceModel=7)
