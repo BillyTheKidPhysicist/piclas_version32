@@ -513,19 +513,17 @@ END IF
 !add slow acting integral feedback first
 NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield
 IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
-  SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
+  NewYield=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
-  SEE%SurfModEmissionYield=0
-ELSE
-  SEE%SurfModEmissionYield=NewYield
+  NewYield=0
 END IF 
 
 
 
-!add fast acting proportional is there is any "room" to do so
+!add fast acting proportional is there is any "room" to do so. Update this to the final value
 NewYield=NewYield+ProportionalDeltaYield
 IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
-SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
+  SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
   SEE%SurfModEmissionYield=0
 ELSE
