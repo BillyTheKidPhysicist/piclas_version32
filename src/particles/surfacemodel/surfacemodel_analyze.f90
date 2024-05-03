@@ -498,15 +498,15 @@ END IF
 
 !general integral feedback
 !update exponential average current
-CurrentMean=CurrentMean-CurrentMean/MeanWindow
-CurrentMean=CurrentMean+total_current/MeanWindow
+CurrentMean=CurrentMean-CurrentMean/SEE%MeanWindow
+CurrentMean=CurrentMean+total_current/SEE%MeanWindow
 
 !find the new delta yield
 IF(ABS(CurrentMean).LT.eps)THEN
   IntegralDeltaYield=0.0
 ELSE
   TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
-  IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/MeanWindow
+  IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/SEE%MeanWindow
 END IF
 
 

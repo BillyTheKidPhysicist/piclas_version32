@@ -121,6 +121,8 @@ ALLOCATE(IntegralYieldErrorFact(1:nPartBound))
 IntegralYieldErrorFact = 0.
 ALLOCATE(ProportionalYieldErrorFact(1:nPartBound))
 ProportionalYieldErrorFact=0.0
+ALLOCATE(MeanWindow(1:nPartBound))
+MeanWindow=0.0
 
 ALLOCATE(SurfModSEEPowerFit(1:2, 1:nPartBound))
 SurfModSEEPowerFit = 0
@@ -207,6 +209,7 @@ SEE%SurfModEmissionYield_0=SEE%SurfModEmissionYield
 SEE%MaximumCurrent=MAXVAL(MaximumCurrent) !take only the maximum value
 SEE%IntegralYieldErrorFact=MAXVAL(IntegralYieldErrorFact)
 SEE%ProportionalYieldErrorFact=MAXVAL(ProportionalYieldErrorFact)
+SEE%MeanWindow=MAXVAL(MeanWindow)
 
 ! If SEE model by Morozov is used, read the additional parameter for the electron bulk temperature
 IF(SurfModelElectronTemp)THEN
@@ -271,9 +274,13 @@ SDEALLOCATE(SurfModEmissionEnergy)
 SDEALLOCATE(SurfModEmissionYield)
 SDEALLOCATE(StickingCoefficientData)
 SDEALLOCATE(SurfModSEEPowerFit)
+
+!billy
 SDEALLOCATE(MaximumCurrent)
 SDEALLOCATE(IntegralYieldErrorFact)
 SDEALLOCATE(ProportionalYieldErrorFact)
+SDEALLOCATE(MeanWindow)
+
 END SUBROUTINE FinalizeSurfaceModel
 
 END MODULE MOD_SurfaceModel_Init

@@ -34,7 +34,7 @@ CHARACTER(LEN=50) , ALLOCATABLE  :: SurfModEnergyDistribution(:)    ! Energy dis
 REAL, ALLOCATABLE    :: MaximumCurrent(:)
 REAL, ALLOCATABLE    :: ProportionalYieldErrorFact(:)
 REAL, ALLOCATABLE    :: IntegralYieldErrorFact(:)
-INTEGER             :: MeanWindow
+INTEGER,ALLOCATABLE             :: MeanWindow(:)
 
 
 
