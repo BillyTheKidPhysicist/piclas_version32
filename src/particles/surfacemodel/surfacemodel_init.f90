@@ -53,6 +53,7 @@ CALL prms%CreateRealOption(    'Part-Boundary[$]-MaximumCurrent'      , 'Maximum
 CALL prms%CreateRealOption(    'Part-Boundary[$]-IntegralYieldErrorFact'      , 'Integral feedback term to smooth yield conversion' , numberedmulti=.True.)
 CALL prms%CreateRealOption(    'Part-Boundary[$]-ProportionalYieldErrorFact'      , 'Proportional feedback term to smooth yield conversion' , numberedmulti=.True.)
 CALL prms%CreateRealOption(    'Part-Boundary[$]-MeanWindow'      , 'Exponential averaging window for Integral feedback' , numberedmulti=.True.)
+CALL prms%CreateRealOption(    'Part-Boundary[$]-MinYieldFact'      , 'Smallest that yield is allowed to become' , numberedmulti=.True.)
 
 
 CALL prms%CreateRealOption(    'Part-SurfaceModel-SEE-Te'                   , 'Bulk electron temperature for SEE model by Morozov2004 in Kelvin (default corresponds to 50 eV)' , '5.80226250308285e5')
@@ -123,6 +124,8 @@ ALLOCATE(ProportionalYieldErrorFact(1:nPartBound))
 ProportionalYieldErrorFact=0.0
 ALLOCATE(MeanWindow(1:nPartBound))
 MeanWindow=0.0
+ALLOCATE(MinYieldFact(1:nPartBound))
+MinYieldFact=0.0
 
 ALLOCATE(SurfModSEEPowerFit(1:2, 1:nPartBound))
 SurfModSEEPowerFit = 0
@@ -187,6 +190,7 @@ DO iPartBound=1,nPartBound
     IntegralYieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-IntegralYieldErrorFact' ,'1.0')
     ProportionalYieldErrorFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-ProportionalYieldErrorFact' ,'0.0')
     MeanWindow(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-MeanWindow' ,'10')
+    MinYieldFact(iPartBound)      = GETREAL('Part-Boundary'//TRIM(hilf2)//'-MinYieldFact' ,'10')
 
   ! 8: SEE-E (e- on dielectric materials is considered for SEE and three different outcomes)
   CASE(8)
@@ -210,6 +214,7 @@ SEE%MaximumCurrent=MAXVAL(MaximumCurrent) !take only the maximum value
 SEE%IntegralYieldErrorFact=MAXVAL(IntegralYieldErrorFact)
 SEE%ProportionalYieldErrorFact=MAXVAL(ProportionalYieldErrorFact)
 SEE%MeanWindow=MAXVAL(MeanWindow)
+SEE%MinYieldFact=MAXVAL(MinYieldFact)
 
 ! If SEE model by Morozov is used, read the additional parameter for the electron bulk temperature
 IF(SurfModelElectronTemp)THEN
@@ -280,6 +285,7 @@ SDEALLOCATE(MaximumCurrent)
 SDEALLOCATE(IntegralYieldErrorFact)
 SDEALLOCATE(ProportionalYieldErrorFact)
 SDEALLOCATE(MeanWindow)
+SDEALLOCATE(MinYieldFact)
 
 END SUBROUTINE FinalizeSurfaceModel
 

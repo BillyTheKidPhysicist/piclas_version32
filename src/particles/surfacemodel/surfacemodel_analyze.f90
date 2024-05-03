@@ -530,6 +530,9 @@ ELSE
   SEE%SurfModEmissionYield=NewYield
 END IF 
 
+IF(SEE%SurfModEmissionYield.LT.SEE%SurfModEmissionYield_0/SEE%MinYieldFact)THEN
+  SEE%SurfModEmissionYield = SEE%SurfModEmissionYield_0/SEE%MinYieldFact
+END IF
 
 
 
