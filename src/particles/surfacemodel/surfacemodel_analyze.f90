@@ -186,7 +186,7 @@ REAL                :: charge,TotalElectricCharge
 !billy 
 !to log total current for assigning to all other processors
 REAL                :: total_current,TargetYield,DeltaYield,NewYield,IntegralDeltaYield,ProportionalDeltaYield
-
+REAL                :: eps=1e-12 !small number for current comparison
 
 #if USE_HDG
 INTEGER             :: iEDCBC,i,iBoundary,iPartBound2
@@ -487,8 +487,12 @@ IF(MPIRoot)THEN
 
 !billy
 !generate proportional feedback
-TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/total_current
-ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)
+IF(ABS(total_current).LT.eps)THEN
+  ProportionalDeltaYield=0.0
+ELSE
+  TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/total_current
+  ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)
+END IF
 
 
 !general integral feedback
@@ -497,19 +501,26 @@ CurrentMean=CurrentMean-CurrentMean/MeanWindow
 CurrentMean=CurrentMean+total_current/MeanWindow
 
 !find the new delta yield
-TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
-IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/MeanWindow
+IF(ABS(CurrentMean).LT.eps)THEN
+  IntegralDeltaYield=0.0
+ELSE
+  TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
+  IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/MeanWindow
+END IF
+
 
 NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield+ProportionalDeltaYield
 !apply the new yield delta
-IF(NewYield>SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
+IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
   SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
+ELSE IF(NewYield.LT.0)THEN !if yield is negative
+  SEE%SurfModEmissionYield=0
 ELSE
   SEE%SurfModEmissionYield=NewYield
 END IF 
 
-IF(SEE%SurfModEmissionYield .LT. 0) SEE%SurfModEmissionYield=0 !can not be less than zero. This could otherwise happen
-  !with negative current
+
+
 print *, 'current:', total_current, SEE%SurfModEmissionYield
 #if USE_MPI
 END IF
