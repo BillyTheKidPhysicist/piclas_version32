@@ -185,7 +185,7 @@ REAL                :: charge,TotalElectricCharge
 
 !billy 
 !to log total current for assigning to all other processors
-REAL                :: total_current,TargetYield,DeltaYield,NewIntegralYield
+REAL                :: total_current,TargetYield,DeltaYield,NewYield,IntegralDeltaYield,ProportionalDeltaYield
 
 
 #if USE_HDG
@@ -355,37 +355,29 @@ IF(MPIRoot)THEN
 
             !billy
             total_current=total_current+SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
-                      !billy
 
 
             !billy
-            !apply proportional feedback
-            IF(SEE%total_current .GE. SEE%MaximumCurrent)THEN !if too much current, reduce yield
-              TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/SEE%total_current
-              DeltaYield=TargetYield-SEE%SurfModEmissionYield
-              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%ProportionalYieldErrorFact*DeltaYield
-            ELSE !if there is not excess current, increase yield towards its original value
-              TargetYield=SEE%SurfModEmissionYield_0
-              DeltaYield=TargetYield-SEE%SurfModEmissionYield
-              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%ProportionalYieldErrorFact*DeltaYield
-            END IF
+            !generate proportional feedback
+            TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/total_current
+            ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)
 
 
-            !apply integral feedback
+            !general integral feedback
             !update exponential average current
             CurrentMean=CurrentMean-CurrentMean/MeanWindow
             CurrentMean=CurrentMean+total_current/MeanWindow
             
             !find the new delta yield
             TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
-            DeltaYield=TargetYield-SEE%SurfModEmissionYield
-            DeltaYield=DeltaYield/MeanWindow
-            NewIntegralYield=SEE%SurfModEmissionYield+DeltaYield
+            IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/MeanWindow
+
+            NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield+ProportionalDeltaYield
             !apply the new yield delta
-            IF(NewIntegralYield>SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
+            IF(NewYield>SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
               SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
             ELSE
-              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield+SEE%IntegralYieldErrorFact*DeltaYield
+              SEE%SurfModEmissionYield=NewYield
             END IF 
 
             IF(SEE%SurfModEmissionYield .LT. 0) SEE%SurfModEmissionYield=0 !can not be less than zero
