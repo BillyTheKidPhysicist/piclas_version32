@@ -523,7 +523,7 @@ END IF
 
 
 
-print *, 'current:', total_current, SEE%SurfModEmissionYield
+print *, 'current, instant: ', total_current, 'current, mean: ',CurrentMean, 'yield: ', SEE%SurfModEmissionYield
 #if USE_MPI
 END IF
 #endif /*USE_MPI*/
