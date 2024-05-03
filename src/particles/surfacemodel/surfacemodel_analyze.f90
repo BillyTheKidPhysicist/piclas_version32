@@ -378,9 +378,11 @@ IF(MPIRoot)THEN
           ! Sampling time has already been considered due to the displacement current
           IF (iBPO.eq.2)THEN !if anode
             total_current=total_current-TotalElectricCharge
-          ELSE !else cathode
+          ELSE !else cathode. Need to subtract SEE to not double count. The SEE electrons are counted by arriving at the anode
             total_current=total_current+TotalElectricCharge
+            total_current=total_current-SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
           END IF
+          
 
           CALL WriteDataInfo(unit_index,RealScalar=TotalElectricCharge)
         END IF ! ABS(SurfModelAnalyzeSampleTime).LE.0.0
