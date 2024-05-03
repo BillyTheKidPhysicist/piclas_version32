@@ -357,7 +357,7 @@ IF(MPIRoot)THEN
              
 
 
-
+          
 
           TotalElectricCharge = TotalElectricCharge/SurfModelAnalyzeSampleTime
 
@@ -371,9 +371,17 @@ IF(MPIRoot)THEN
           END IF ! CalcElectricTimeDerivative
 #endif /*USE_HDG*/
 
-            !billy. write before writing record this values. The total current thorugh the system
-            total_current=total_current+TotalElectricCharge
+          !billy: hardcode current correction. Surface 1 is cathode and surface 2 is anode. Ions flowing into a surface produce
+          !positive current, but it needs to be negative for flowing into the anode. Electrons flowing into a surface produces
+          !negative current, but it needs to be psotive into the anode. Thus, the sign of the current must be switched on the 
+          !anode
           ! Sampling time has already been considered due to the displacement current
+          IF (iBPO.eq.2)THEN !if anode
+            total_current=total_current-TotalElectricCharge
+          ELSE !else cathode
+            total_current=total_current-TotalElectricCharge
+          END IF
+
           CALL WriteDataInfo(unit_index,RealScalar=TotalElectricCharge)
         END IF ! ABS(SurfModelAnalyzeSampleTime).LE.0.0
       END DO ! iBPO = 1, BPO%NPartBoundaries
@@ -501,7 +509,8 @@ ELSE
   SEE%SurfModEmissionYield=NewYield
 END IF 
 
-IF(SEE%SurfModEmissionYield .LT. 0) SEE%SurfModEmissionYield=0 !can not be less than zero
+IF(SEE%SurfModEmissionYield .LT. 0) SEE%SurfModEmissionYield=0 !can not be less than zero. This could otherwise happen
+  !with negative current
 
 #if USE_MPI
 END IF
