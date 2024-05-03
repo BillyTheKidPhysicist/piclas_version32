@@ -353,34 +353,6 @@ IF(MPIRoot)THEN
             ! Add SEE current if this BC has secondary electron emission
             IF(iSEE.GT.0) TotalElectricCharge = TotalElectricCharge + SEE%RealElectronOut(iSEE)
 
-            !billy
-            total_current=total_current+SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
-
-
-            !billy
-            !generate proportional feedback
-            TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/total_current
-            ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)
-
-
-            !general integral feedback
-            !update exponential average current
-            CurrentMean=CurrentMean-CurrentMean/MeanWindow
-            CurrentMean=CurrentMean+total_current/MeanWindow
-            
-            !find the new delta yield
-            TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
-            IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/MeanWindow
-
-            NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield+ProportionalDeltaYield
-            !apply the new yield delta
-            IF(NewYield>SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
-              SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
-            ELSE
-              SEE%SurfModEmissionYield=NewYield
-            END IF 
-
-            IF(SEE%SurfModEmissionYield .LT. 0) SEE%SurfModEmissionYield=0 !can not be less than zero
           END IF ! CalcElectronSEE
              
 
@@ -398,6 +370,9 @@ IF(MPIRoot)THEN
             TotalElectricCharge = TotalElectricCharge + EDC%Current(iEDCBC)
           END IF ! CalcElectricTimeDerivative
 #endif /*USE_HDG*/
+
+            !billy. write before writing record this values. The total current thorugh the system
+            total_current=total_current+TotalElectricCharge
           ! Sampling time has already been considered due to the displacement current
           CALL WriteDataInfo(unit_index,RealScalar=TotalElectricCharge)
         END IF ! ABS(SurfModelAnalyzeSampleTime).LE.0.0
@@ -498,8 +473,44 @@ END IF
 !-----------------------------------------------------------------------------------------------------------------------------------
 SurfModelAnalyzeSampleTime = Time ! Backup "old" time value for next output
 
+#if USE_MPI
+IF(MPIRoot)THEN
+#endif /*USE_MPI*/
+
+!billy
+!generate proportional feedback
+TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/total_current
+ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)
+
+
+!general integral feedback
+!update exponential average current
+CurrentMean=CurrentMean-CurrentMean/MeanWindow
+CurrentMean=CurrentMean+total_current/MeanWindow
+
+!find the new delta yield
+TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
+IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/MeanWindow
+
+NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield+ProportionalDeltaYield
+print *, 'current:', total_current
+!apply the new yield delta
+IF(NewYield>SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
+  SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
+ELSE
+  SEE%SurfModEmissionYield=NewYield
+END IF 
+
+IF(SEE%SurfModEmissionYield .LT. 0) SEE%SurfModEmissionYield=0 !can not be less than zero
+
+#if USE_MPI
+END IF
+#endif /*USE_MPI*/
+
+
 !billy
 IF(CalcElectronSEE)THEN
+  !broadcast the result
 #if USE_MPI 
               CALL MPI_BCAST(SEE%SurfModEmissionYield,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
               !CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
