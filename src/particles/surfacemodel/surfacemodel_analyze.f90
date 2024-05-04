@@ -352,7 +352,7 @@ IF(MPIRoot)THEN
             ! Add SEE current if this BC has secondary electron emission
             IF(iSEE.GT.0)THEN
               TotalElectricCharge = TotalElectricCharge + SEE%RealElectronOut(iSEE)
-              total_current=total_current+SEE%RealElectronOut(iSEE)
+              total_current=total_current+SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
            END IF
 
           END IF ! CalcElectronSEE
@@ -360,7 +360,6 @@ IF(MPIRoot)THEN
 
 
           
-          total_current=total_current/SurfModelAnalyzeSampleTime
           TotalElectricCharge = TotalElectricCharge/SurfModelAnalyzeSampleTime
 
 #if USE_HDG
