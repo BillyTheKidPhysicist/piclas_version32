@@ -350,14 +350,17 @@ IF(MPIRoot)THEN
             ! Get SEE ID
             iSEE = SEE%BCIDToSEEBCID(iPartBound)
             ! Add SEE current if this BC has secondary electron emission
-            IF(iSEE.GT.0) TotalElectricCharge = TotalElectricCharge + SEE%RealElectronOut(iSEE)
+            IF(iSEE.GT.0)THEN
+              TotalElectricCharge = TotalElectricCharge + SEE%RealElectronOut(iSEE)
+              total_current=total_current+SEE%RealElectronOut(iSEE)
+           END IF
 
           END IF ! CalcElectronSEE
              
 
 
           
-
+          total_current=total_current/SurfModelAnalyzeSampleTime
           TotalElectricCharge = TotalElectricCharge/SurfModelAnalyzeSampleTime
 
 #if USE_HDG
@@ -375,12 +378,12 @@ IF(MPIRoot)THEN
           !negative current, but it needs to be psotive into the anode. Thus, the sign of the current must be switched on the 
           !anode
           ! Sampling time has already been considered due to the displacement current
-          IF (iBPO.eq.2)THEN !if anode
-            total_current=total_current-TotalElectricCharge
-          ELSE !else cathode. Need to subtract SEE to not double count. The SEE electrons are counted by arriving at the anode
-            total_current=total_current+TotalElectricCharge
-            total_current=total_current-SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
-          END IF
+          !IF (iBPO.eq.2)THEN !if anode
+          !  total_current=total_current-TotalElectricCharge
+          !ELSE !else cathode. Need to subtract SEE to not double count. The SEE electrons are counted by arriving at the anode
+          !  total_current=total_current+TotalElectricCharge
+          !  total_current=total_current-SEE%RealElectronOut(iSEE)/SurfModelAnalyzeSampleTime
+          !END IF
           
 
           CALL WriteDataInfo(unit_index,RealScalar=TotalElectricCharge)
