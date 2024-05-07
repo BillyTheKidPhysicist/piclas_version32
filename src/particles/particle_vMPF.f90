@@ -299,8 +299,11 @@ END DO
 ! 4.) calc bulk velocity after deleting and set new MPF
 DO iLoop = 1, nPartNew
   iPart = iPartIndx_Node(iLoop)
-  ! Set new particle weight by distributing the total weight onto the remaining particles, proportional to their current weight
-  PartMPF(iPart) = totalWeight * PartMPF(iPart) / (totalWeight - lostWeight)
+
+  !billy: change this to simply add the missing weighting factor rather than scaling. This prevents noise that results in a 
+  !particles having a huge value of MPF. Really, I should do somethingm more clever.
+  PartMPF(iPart) = PartMPF(iPart) + lostWeight/nPartNew
+
   partWeight = GetParticleWeight(iPart)
   vBulk_new(1:3) = vBulk_new(1:3) + PartState(4:6,iPart) * partWeight
 END DO
