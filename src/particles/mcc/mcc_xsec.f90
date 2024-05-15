@@ -497,7 +497,6 @@ iSpec_p1 = PartSpecies(iPart_p1);      iSpec_p2 = PartSpecies(iPart_p2)
 iCase = CollInf%Coll_Case(iSpec_p1,iSpec_p2)
 
 IF(SpecXSec(iCase)%UseCollXSec) THEN
-  print *, "here with xsex"  !billy
   IF(SpecDSMC(iSpec_p1)%UseCollXSec) THEN
     targetSpec = iSpec_p2; SpecNumTarget = SpecNum2; SpecNumSource = SpecNum1
   ELSE
@@ -542,7 +541,6 @@ IF(SpecXSec(iCase)%UseCollXSec) THEN
     Coll_pData(iPair)%Prob = Coll_pData(iPair)%Prob * SpecNumSource / CollInf%Coll_CaseNum(iCase)
   END IF
 ELSE
-  print *, "here without xsec"  !billy
   Coll_pData(iPair)%Prob = SpecNum1*SpecNum2/(1 + CollInf%KronDelta(Coll_pData(iPair)%PairType))  &
           * CollInf%Cab(Coll_pData(iPair)%PairType)                           & ! Cab species comb fac
           * MacroParticleFactor / CollCaseNum                                                     &
