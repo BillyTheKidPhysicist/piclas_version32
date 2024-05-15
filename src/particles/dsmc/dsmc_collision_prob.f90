@@ -120,7 +120,9 @@ SELECT CASE(iPType)
   CASE(2,3,4,5,11,12,21,22,20,30,40,6,14,24)
   ! Atom-Atom,  Atom-Mol, Mol-Mol, Atom-Atomic (non-CEX/MEX) Ion, Molecule-Atomic Ion, Atom-Molecular Ion, Molecule-Molecular Ion
   ! 5: Atom - Electron, 6: Molecule - Electron, 14: Electron - Atomic Ion, 24: Molecular Ion - Electron
-    IF(UseMCC) THEN
+
+    !billy. Attempting to get cross section stuff to work
+    IF(.TRUE.) THEN
       ! Coll_pData(iPair)%Prob is set inside the routine
       CALL XSec_CalcCollisionProb(iPair,iElem,SpecNum1,SpecNum2,CollCaseNum,MacroParticleFactor,Volume,dtCell)
       IF(CollisMode.EQ.3) THEN
