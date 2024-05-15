@@ -546,7 +546,8 @@ INTEGER, ALLOCATABLE  :: CounterLevelAboveMax(:)
 REAL, ALLOCATABLE     :: CollXSecDataTemp(:,:)
 !===================================================================================================================================
 
-IF(BGGas%NumberOfSpecies.LE.0) CALL abort(__STAMP__,'Cross-section-based chemistry without background gas has not been tested yet!')
+!billy
+!IF(BGGas%NumberOfSpecies.LE.0) CALL abort(__STAMP__,'Cross-section-based chemistry without background gas has not been tested yet!')
 
 ! 1.) Read-in of cross-section data for chemical reactions
 DO iCase = 1, CollInf%NumCase
