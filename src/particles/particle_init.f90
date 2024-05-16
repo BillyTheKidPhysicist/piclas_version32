@@ -93,7 +93,7 @@ CALL prms%CreateIntOption(      'Part-Species[$]-InteractionID' , 'ID for identi
                                                                  ' 20: Molecular Ion', '0', numberedmulti=.TRUE.)
 !billy
 !create option for reading if particle is metastable
-CALL prms%CreateLogicalOption(      'Part-Species[$]-IsMetastable' , 'Determine if particle is metastable', '.TRUE.',numberedmulti=.TRUE.)
+CALL prms%CreateLogicalOption(      'Part-Species[$]-IsMetastable' , 'Determine if particle is metastable', '.FALSE.',numberedmulti=.TRUE.)
 
 ! Ionization
 CALL prms%CreateLogicalOption(  'Part-DoInitialIonization'    , 'When restarting from a state, ionize the species to a '//&
