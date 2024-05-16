@@ -92,7 +92,7 @@ REAL                          :: PartStateSplit(1:6), PartPosRefSplit(1:3), Part
 INTEGER, ALLOCATABLE          :: VibQuantsParSplit(:), PartIndexCase(:)
 REAL                          :: ProbNull, dtVar
 !===================================================================================================================================
-PRINT *, 'here'
+
 ! Skip elements outside of any background gas regions
 IF(BGGas%UseRegions) THEN
   IF(BGGas%RegionElemType(iElem).EQ.0) RETURN
@@ -375,7 +375,7 @@ DO iSpec = 1, nSpecies
         GammaFac = 1./SQRT(1.-GammaFac)
         CollEnergy = (GammaFac-1.) * CollInf%MassRed(iCase) * c2
       END IF
-
+      PRINT *, 'HERE', cRela2, CollEnergy, CollInf%MassRed(iCase)
       ! Set the time step in case of species-specific time stepping
       IF(VarTimeStep%UseSpeciesSpecific.AND..NOT.VarTimeStep%DisableForMCC) THEN
         dtVar = dt * Species(iSpec)%TimeStepFactor
