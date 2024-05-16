@@ -517,8 +517,6 @@ IF(SpecXSec(iCase)%UseCollXSec) THEN
   ! Calculate the collision probability
   SpecXSec(iCase)%CrossSection = InterpolateCrossSection(SpecXSec(iCase)%CollXSecData,CollEnergy)
 
-  !billy
-  print *, SpecXSec(iCase)%CrossSection, CollEnergy,ReducedMassUnweighted,Coll_pData(iPair)%CRela2
   Coll_pData(iPair)%Prob = (1. - EXP(-SQRT(Coll_pData(iPair)%CRela2) * SpecXSec(iCase)%CrossSection * SpecNumTarget * MacroParticleFactor &
                                         / Volume * dtCell))
   ! Correction for conditional probabilities in case of MCC

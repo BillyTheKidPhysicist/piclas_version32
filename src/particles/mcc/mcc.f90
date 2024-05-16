@@ -391,6 +391,7 @@ DO iSpec = 1, nSpecies
         SpecXSec(iCase)%CrossSection = InterpolateCrossSection(SpecXSec(iCase)%CollXSecData,CollEnergy)
         ! Calculate the collision probability
         CollProb = (1. - EXP(-SQRT(CRela2) * SpecXSec(iCase)%CrossSection * BGGasNumDens * dtVar))
+        print *, CollProb, SpecXSec(iCase)%CrossSection, BGGasNumDens, CRela2
         ! Correct the collision probability in the case of the second species being a background species as the number of pairs
         ! is either determined based on the null collision probability or on the species fraction
         IF(XSec_NullCollision) THEN
