@@ -151,6 +151,10 @@ TYPE tSpecies                                                                ! P
   TYPE(tSurfaceFlux),POINTER             :: Surfaceflux(:) => NULL()         ! Particle Data for each SurfaceFlux emission
   INTEGER                                :: nSurfacefluxBCs                  ! Number of SF emissions
   LOGICAL                                :: DoOverwriteParameters            ! Flag to read in parameters manually
+
+  !billy
+  LOGICAL                                :: IsMetastable !To record if particle is a metastable atom
+
 #if IMPA
   LOGICAL                                :: IsImplicit
 #endif

@@ -222,7 +222,9 @@ CASE(7) ! 7: SEE-I (bombarding electrons are removed, Ar+ on different materials
 
   IF(PARTISELECTRON(PartID_IN))THEN ! Bombarding electron
     RETURN ! nothing to do
-  ELSEIF(Species(SpecID)%ChargeIC.GT.0.0)THEN ! Positive bombarding ion
+
+  !billy
+  ELSEIF(Species(SpecID)%ChargeIC.GT.0.0 .OR. Species(iSpec)%IsMetastable)THEN ! Positive bombarding ion or metastable
     ! SEE-I bombarding e- are removed, Ar+ on different materials is considered for secondary e- emission (the default probability
     ! is 0.13 probability, see  D. Depla, Magnetron sputter deposition: Linking discharge voltage with target properties, 2009)
 
