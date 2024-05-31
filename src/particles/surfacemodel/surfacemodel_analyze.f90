@@ -20,6 +20,12 @@ PRIVATE
 !billy
 REAL                :: CurrentMean=0.0 !Exponential average current
 REAL                :: EmissionYieldRightNow=-1 !very silly thing I do with the yield to enable load balancing
+REAL                :: MeanWindow = -1
+REAL  :: MaximumCurrent=-1
+REAL  :: SurfModEmissionYield_0=-1
+REAL :: MinYieldFact=-1
+REAL :: ProportionalYieldErrorFact=-1
+REAL :: IntegralYieldErrorFact=-1
 
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! GLOBAL VARIABLES
@@ -492,6 +498,26 @@ print *,'start',EmissionYieldRightNow,EmissionYield,CurrentMean
 IF (EmissionYieldRightNow.EQ.-1)THEN
   EmissionYieldRightNow=EmissionYield
 END IF
+IF (MeanWindow.EQ.-1)THEN
+  MeanWindow=SEE%MeanWindow
+END IF
+IF (MaximumCurrent.EQ.-1)THEN
+  MaximumCurrent=SEE%MaximumCurrent
+END IF
+IF (SurfModEmissionYield_0.EQ.-1)THEN
+  SurfModEmissionYield_0=SEE%SurfModEmissionYield_0
+END IF
+IF (MinYieldFact.EQ.-1)THEN
+  MinYieldFact=SEE%MinYieldFact
+END IF
+
+IF (ProportionalYieldErrorFact.EQ.-1)THEN
+  ProportionalYieldErrorFact=SEE%ProportionalYieldErrorFact
+END IF
+
+IF (IntegralYieldErrorFact.EQ.-1)THEN
+  IntegralYieldErrorFact=SEE%IntegralYieldErrorFact
+END IF
 
 !billy
 !generate proportional feedback
@@ -499,32 +525,32 @@ print *, '1', total_current
 IF(ABS(total_current).LT.eps)THEN
   ProportionalDeltaYield=0.0
 ELSE
-  TargetYield=EmissionYieldRightNow*SEE%MaximumCurrent/total_current
-  print *, '2', TargetYield,EmissionYieldRightNow,SEE%MaximumCurrent,total_current
-  ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-EmissionYieldRightNow)
-  print *, '3', ProportionalDeltaYield, SEE%ProportionalYieldErrorFact, TargetYield,EmissionYieldRightNow
+  TargetYield=EmissionYieldRightNow*MaximumCurrent/total_current
+  print *, '2', TargetYield,EmissionYieldRightNow,MaximumCurrent,total_current
+  ProportionalDeltaYield=ProportionalYieldErrorFact*(TargetYield-EmissionYieldRightNow)
+  print *, '3', ProportionalDeltaYield, ProportionalYieldErrorFact, TargetYield,EmissionYieldRightNow
 END IF
 
 
 !general integral feedback
 !update exponential average current
-CurrentMean=CurrentMean-CurrentMean/SEE%MeanWindow
-CurrentMean=CurrentMean+total_current/SEE%MeanWindow
+CurrentMean=CurrentMean-CurrentMean/MeanWindow
+CurrentMean=CurrentMean+total_current/MeanWindow
 
 !generate the integral feedback
 IF(ABS(CurrentMean).LT.eps)THEN
   IntegralDeltaYield=0.0
 ELSE
-  TargetYield=EmissionYieldRightNow*SEE%MaximumCurrent/CurrentMean
-  IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-EmissionYieldRightNow)/SEE%MeanWindow
+  TargetYield=EmissionYieldRightNow*MaximumCurrent/CurrentMean
+  IntegralDeltaYield=IntegralYieldErrorFact*(TargetYield-EmissionYieldRightNow)/MeanWindow
 END IF
 
 
 !add slow acting integral feedback first
 NewYield=EmissionYieldRightNow+IntegralDeltaYield
 print *, 'here 1',NewYield
-IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
-  NewYield=SEE%SurfModEmissionYield_0
+IF(NewYield.GT.SurfModEmissionYield_0)THEN !if yield is too large, set to default value
+  NewYield=SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
   NewYield=0
 END IF 
@@ -534,16 +560,16 @@ END IF
 !add fast acting proportional is there is any "room" to do so. Update this to the final value
 NewYield=NewYield+ProportionalDeltaYield
 print *, 'here 2',NewYield
-IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
-  EmissionYieldRightNow=SEE%SurfModEmissionYield_0
+IF(NewYield.GT.SurfModEmissionYield_0)THEN !if yield is too large, set to default value
+  EmissionYieldRightNow=SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
   EmissionYieldRightNow=0
 ELSE
   EmissionYieldRightNow=NewYield
 END IF 
 
-IF(EmissionYieldRightNow.LT.SEE%SurfModEmissionYield_0/SEE%MinYieldFact)THEN
-  EmissionYieldRightNow = SEE%SurfModEmissionYield_0/SEE%MinYieldFact
+IF(EmissionYieldRightNow.LT.SurfModEmissionYield_0/MinYieldFact)THEN
+  EmissionYieldRightNow = SurfModEmissionYield_0/MinYieldFact
 END IF
 
 
