@@ -108,7 +108,9 @@ IF (CollisMode.NE.0) THEN
       ELSE
         CALL DSMC_pairing_bggas(iElem)
       END IF
-    ELSE IF (nPart.GT.1) THEN
+    !billy: Enable MCC and DSMC! I hope this works!
+    END IF
+    IF (nPart.GT.1) THEN
       IF (DSMC%UseOctree) THEN
         ! On-the-fly cell refinement and pairing within subcells
         IF(Symmetry%Order.EQ.3) THEN
