@@ -36,12 +36,13 @@ REAL, ALLOCATABLE    :: ProportionalYieldErrorFact(:)
 REAL, ALLOCATABLE    :: IntegralYieldErrorFact(:)
 INTEGER,ALLOCATABLE             :: MeanWindow(:)
 INTEGER,ALLOCATABLE             :: MinYieldFact(:)
-
+REAL , ALLOCATABLE               :: SurfModEmissionYield(:)         ! to track the user input values. totally hacky
+REAL                :: EmissionYield
 
 
 
 REAL , ALLOCATABLE               :: SurfModEmissionEnergy(:)        ! Energy of emitted particle for surface emission model (only available for SurfaceModel=7)
-REAL , ALLOCATABLE               :: SurfModEmissionYield(:)         ! Emission yield factor for surface emission model (only changable for SurfaceModel=7)
+
 REAL                             :: BackupVeloABS                   ! Backup of velocity during double-ARMfor 2nd SEE
 ! === Porous BC ====================================================================================================================
 INTEGER                          :: nPorousBC                       ! Number of porous BCs

@@ -74,7 +74,7 @@ USE MOD_Particle_Vars          ,ONLY: nSpecies,Species,usevMPF
 USE MOD_ReadInTools            ,ONLY: GETINT,GETREAL,GETLOGICAL,GETSTR,GETREALARRAY
 USE MOD_Particle_Boundary_Vars ,ONLY: nPartBound,PartBound
 USE MOD_SurfaceModel_Vars      ,ONLY: BulkElectronTempSEE,SurfModSEEelectronTempAutoamtic
-USE MOD_SurfaceModel_Vars      ,ONLY: SurfModResultSpec,SurfModEnergyDistribution,SurfModEmissionEnergy,SurfModEmissionYield
+USE MOD_SurfaceModel_Vars      ,ONLY: SurfModResultSpec,SurfModEnergyDistribution,SurfModEmissionEnergy,SurfModEmissionYield,EmissionYield
 USE MOD_SurfaceModel_Vars      ,ONLY: SurfModSEEPowerFit
 USE MOD_Particle_Vars          ,ONLY: CalcBulkElectronTemp,BulkElectronTemp
 
@@ -208,7 +208,7 @@ DEALLOCATE(SumOfResultSpec)
 !-billy
 !Assign the default and a changeable value of SEE%SurfModEmissionYield so that it can adapt to the value of current
 !this assumes that the yield is the same for all species
-SEE%SurfModEmissionYield=MAXVAL(SurfModEmissionYield) !only one surface has this value
+EmissionYield=MAXVAL(SurfModEmissionYield) !only one surface has this value
 SEE%SurfModEmissionYield_0=SEE%SurfModEmissionYield
 SEE%MaximumCurrent=MAXVAL(MaximumCurrent) !take only the maximum value
 SEE%IntegralYieldErrorFact=MAXVAL(IntegralYieldErrorFact)
