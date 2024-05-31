@@ -527,7 +527,7 @@ NewYield=NewYield+ProportionalDeltaYield
 IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
   EmissionYield=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
-  SEE%SurfModEmissionYield=0
+  EmissionYield=0
 ELSE
   EmissionYield=NewYield
 END IF 
