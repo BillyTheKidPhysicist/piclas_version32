@@ -209,7 +209,7 @@ DEALLOCATE(SumOfResultSpec)
 !Assign the default and a changeable value of SEE%SurfModEmissionYield so that it can adapt to the value of current
 !this assumes that the yield is the same for all species
 EmissionYield=MAXVAL(SurfModEmissionYield) !only one surface has this value
-SEE%SurfModEmissionYield_0=SEE%EmissionYield
+SEE%SurfModEmissionYield_0=EmissionYield
 SEE%MaximumCurrent=MAXVAL(MaximumCurrent) !take only the maximum value
 SEE%IntegralYieldErrorFact=MAXVAL(IntegralYieldErrorFact)
 SEE%ProportionalYieldErrorFact=MAXVAL(ProportionalYieldErrorFact)
