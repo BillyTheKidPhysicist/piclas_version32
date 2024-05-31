@@ -488,7 +488,7 @@ SurfModelAnalyzeSampleTime = Time ! Backup "old" time value for next output
 #if USE_MPI
 IF(MPIRoot)THEN
 #endif /*USE_MPI*/
-print('here',EmissionYieldRightNow,EmissionYield,CurrentMean)
+print *,'here',EmissionYieldRightNow,EmissionYield,CurrentMean
 IF (EmissionYieldRightNow.EQ.-1)THEN
   EmissionYieldRightNow=EmissionYield
 END IF
