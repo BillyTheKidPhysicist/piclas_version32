@@ -19,13 +19,6 @@ IMPLICIT NONE
 PRIVATE
 !billy
 REAL                :: CurrentMean=0.0 !Exponential average current
-REAL                :: EmissionYieldRightNow=-1 !very silly thing I do with the yield to enable load balancing
-REAL                :: MeanWindow = -1
-REAL  :: MaximumCurrent=-1
-REAL  :: SurfModEmissionYield_0=-1
-REAL :: MinYieldFact=-1
-REAL :: ProportionalYieldErrorFact=-1
-REAL :: IntegralYieldErrorFact=-1
 
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! GLOBAL VARIABLES
@@ -160,7 +153,7 @@ USE MOD_Analyze_Vars              ,ONLY: DoSurfModelAnalyze
 USE MOD_SurfaceModel_Analyze_Vars
 USE MOD_Restart_Vars              ,ONLY: DoRestart
 USE MOD_Particle_Boundary_Vars    ,ONLY: PartBound
-USE MOD_SurfaceModel_Vars         ,ONLY: nPorousBC, PorousBC, EmissionYield
+USE MOD_SurfaceModel_Vars         ,ONLY: nPorousBC, PorousBC
 USE MOD_Particle_Vars             ,ONLY: nSpecies,UseNeutralization,NeutralizationBalanceGlobal,Species,VarTimeStep
 #if USE_MPI
 USE MOD_Particle_Boundary_Vars    ,ONLY: SurfCOMM
@@ -494,63 +487,35 @@ SurfModelAnalyzeSampleTime = Time ! Backup "old" time value for next output
 #if USE_MPI
 IF(MPIRoot)THEN
 #endif /*USE_MPI*/
-print *,'start',EmissionYieldRightNow,EmissionYield,CurrentMean
-IF (EmissionYieldRightNow.EQ.-1)THEN
-  EmissionYieldRightNow=EmissionYield
-END IF
-IF (MeanWindow.EQ.-1)THEN
-  MeanWindow=SEE%MeanWindow
-END IF
-IF (MaximumCurrent.EQ.-1)THEN
-  MaximumCurrent=SEE%MaximumCurrent
-END IF
-IF (SurfModEmissionYield_0.EQ.-1)THEN
-  SurfModEmissionYield_0=SEE%SurfModEmissionYield_0
-END IF
-IF (MinYieldFact.EQ.-1)THEN
-  MinYieldFact=SEE%MinYieldFact
-END IF
-
-IF (ProportionalYieldErrorFact.EQ.-1)THEN
-  ProportionalYieldErrorFact=SEE%ProportionalYieldErrorFact
-END IF
-
-IF (IntegralYieldErrorFact.EQ.-1)THEN
-  IntegralYieldErrorFact=SEE%IntegralYieldErrorFact
-END IF
 
 !billy
 !generate proportional feedback
-print *, '1', total_current
 IF(ABS(total_current).LT.eps)THEN
   ProportionalDeltaYield=0.0
 ELSE
-  TargetYield=EmissionYieldRightNow*MaximumCurrent/total_current
-  print *, '2', TargetYield,EmissionYieldRightNow,MaximumCurrent,total_current
-  ProportionalDeltaYield=ProportionalYieldErrorFact*(TargetYield-EmissionYieldRightNow)
-  print *, '3', ProportionalDeltaYield, ProportionalYieldErrorFact, TargetYield,EmissionYieldRightNow
+  TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/total_current
+  ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)
 END IF
 
 
 !general integral feedback
 !update exponential average current
-CurrentMean=CurrentMean-CurrentMean/MeanWindow
-CurrentMean=CurrentMean+total_current/MeanWindow
+CurrentMean=CurrentMean-CurrentMean/SEE%MeanWindow
+CurrentMean=CurrentMean+total_current/SEE%MeanWindow
 
 !generate the integral feedback
 IF(ABS(CurrentMean).LT.eps)THEN
   IntegralDeltaYield=0.0
 ELSE
-  TargetYield=EmissionYieldRightNow*MaximumCurrent/CurrentMean
-  IntegralDeltaYield=IntegralYieldErrorFact*(TargetYield-EmissionYieldRightNow)/MeanWindow
+  TargetYield=SEE%SurfModEmissionYield*SEE%MaximumCurrent/CurrentMean
+  IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-SEE%SurfModEmissionYield)/SEE%MeanWindow
 END IF
 
 
 !add slow acting integral feedback first
-NewYield=EmissionYieldRightNow+IntegralDeltaYield
-print *, 'here 1',NewYield
-IF(NewYield.GT.SurfModEmissionYield_0)THEN !if yield is too large, set to default value
-  NewYield=SurfModEmissionYield_0
+NewYield=SEE%SurfModEmissionYield+IntegralDeltaYield
+IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
+  NewYield=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
   NewYield=0
 END IF 
@@ -559,23 +524,21 @@ END IF
 
 !add fast acting proportional is there is any "room" to do so. Update this to the final value
 NewYield=NewYield+ProportionalDeltaYield
-print *, 'here 2',NewYield
-IF(NewYield.GT.SurfModEmissionYield_0)THEN !if yield is too large, set to default value
-  EmissionYieldRightNow=SurfModEmissionYield_0
+IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
+  SEE%SurfModEmissionYield=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
-  EmissionYieldRightNow=0
+  SEE%SurfModEmissionYield=0
 ELSE
-  EmissionYieldRightNow=NewYield
+  SEE%SurfModEmissionYield=NewYield
 END IF 
 
-IF(EmissionYieldRightNow.LT.SurfModEmissionYield_0/MinYieldFact)THEN
-  EmissionYieldRightNow = SurfModEmissionYield_0/MinYieldFact
+IF(SEE%SurfModEmissionYield.LT.SEE%SurfModEmissionYield_0/SEE%MinYieldFact)THEN
+  SEE%SurfModEmissionYield = SEE%SurfModEmissionYield_0/SEE%MinYieldFact
 END IF
 
 
-EmissionYield=EmissionYieldRightNow
-print *, 'yield facts', ProportionalDeltaYield,IntegralDeltaYield
-print *, 'current, instant: ', total_current, 'current, mean: ',CurrentMean, 'yield: ', EmissionYield,EmissionYieldRightNow
+
+print *, 'current, instant: ', total_current, 'current, mean: ',CurrentMean, 'yield: ', SEE%SurfModEmissionYield
 #if USE_MPI
 END IF
 #endif /*USE_MPI*/
@@ -585,7 +548,7 @@ END IF
 IF(CalcElectronSEE)THEN
   !broadcast the result
 #if USE_MPI 
-              CALL MPI_BCAST(EmissionYield,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
+              CALL MPI_BCAST(SEE%SurfModEmissionYield,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
               !CALL MPI_BCAST(SEE%total_current,1, MPI_DOUBLE_PRECISION,0,SurfCOMM%UNICATOR,iERROR)
               !CALL MPI_COMM_RANK(MPI_COMM_WORLD, rank, ierror) !for printing I need the rank
               !print *,'mpi',rank,'current', SEE%total_current

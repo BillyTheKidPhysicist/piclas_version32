@@ -75,6 +75,7 @@ TYPE tSEE
   !billy
   REAL                :: MaximumCurrent    !maximum current across SEE surfaces
   REAL                :: SurfModEmissionYield_0 !original value of surface yield
+  REAL                :: SurfModEmissionYield !current value of emission yield
   REAL                :: IntegralYieldErrorFact !factor that controls the integral error correction
   REAL                :: ProportionalYieldErrorFact !factors that controls propotional error correction
   REAL                :: MeanWindow !window for exponential averaging of current
