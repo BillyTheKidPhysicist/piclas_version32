@@ -488,18 +488,21 @@ SurfModelAnalyzeSampleTime = Time ! Backup "old" time value for next output
 #if USE_MPI
 IF(MPIRoot)THEN
 #endif /*USE_MPI*/
-print *,'here',EmissionYieldRightNow,EmissionYield,CurrentMean
+print *,'start',EmissionYieldRightNow,EmissionYield,CurrentMean
 IF (EmissionYieldRightNow.EQ.-1)THEN
   EmissionYieldRightNow=EmissionYield
 END IF
 
 !billy
 !generate proportional feedback
+print *, '1', total_current
 IF(ABS(total_current).LT.eps)THEN
   ProportionalDeltaYield=0.0
 ELSE
   TargetYield=EmissionYieldRightNow*SEE%MaximumCurrent/total_current
+  print *, '2', TargetYield,EmissionYieldRightNow,SEE%MaximumCurrent,total_current
   ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-EmissionYieldRightNow)
+  print *, '3', ProportionalDeltaYield, SEE%ProportionalYieldErrorFact, TargetYield,EmissionYieldRightNow
 END IF
 
 
