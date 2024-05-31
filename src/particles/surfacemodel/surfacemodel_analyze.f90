@@ -19,6 +19,7 @@ IMPLICIT NONE
 PRIVATE
 !billy
 REAL                :: CurrentMean=0.0 !Exponential average current
+REAL                :: EmissionYieldRightNow=-1 !very silly thing I do with the yield to enable load balancing
 
 !-----------------------------------------------------------------------------------------------------------------------------------
 ! GLOBAL VARIABLES
@@ -488,13 +489,17 @@ SurfModelAnalyzeSampleTime = Time ! Backup "old" time value for next output
 IF(MPIRoot)THEN
 #endif /*USE_MPI*/
 
+IF (EmissionYieldRightNow.EQ.-1)THEN
+  EmissionYieldRightNow=EmissionYield
+END IF
+
 !billy
 !generate proportional feedback
 IF(ABS(total_current).LT.eps)THEN
   ProportionalDeltaYield=0.0
 ELSE
-  TargetYield=EmissionYield*SEE%MaximumCurrent/total_current
-  ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-EmissionYield)
+  TargetYield=EmissionYieldRightNow*SEE%MaximumCurrent/total_current
+  ProportionalDeltaYield=SEE%ProportionalYieldErrorFact*(TargetYield-EmissionYieldRightNow)
 END IF
 
 
@@ -507,13 +512,13 @@ CurrentMean=CurrentMean+total_current/SEE%MeanWindow
 IF(ABS(CurrentMean).LT.eps)THEN
   IntegralDeltaYield=0.0
 ELSE
-  TargetYield=EmissionYield*SEE%MaximumCurrent/CurrentMean
-  IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-EmissionYield)/SEE%MeanWindow
+  TargetYield=EmissionYieldRightNow*SEE%MaximumCurrent/CurrentMean
+  IntegralDeltaYield=SEE%IntegralYieldErrorFact*(TargetYield-EmissionYieldRightNow)/SEE%MeanWindow
 END IF
 
 
 !add slow acting integral feedback first
-NewYield=EmissionYield+IntegralDeltaYield
+NewYield=EmissionYieldRightNow+IntegralDeltaYield
 IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
   NewYield=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
@@ -525,19 +530,19 @@ END IF
 !add fast acting proportional is there is any "room" to do so. Update this to the final value
 NewYield=NewYield+ProportionalDeltaYield
 IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
-  EmissionYield=SEE%SurfModEmissionYield_0
+  EmissionYieldRightNow=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
-  EmissionYield=0
+  EmissionYieldRightNow=0
 ELSE
-  EmissionYield=NewYield
+  EmissionYieldRightNow=NewYield
 END IF 
 
-IF(EmissionYield.LT.SEE%SurfModEmissionYield_0/SEE%MinYieldFact)THEN
-  EmissionYield = SEE%SurfModEmissionYield_0/SEE%MinYieldFact
+IF(EmissionYieldRightNow.LT.SEE%SurfModEmissionYield_0/SEE%MinYieldFact)THEN
+  EmissionYieldRightNow = SEE%SurfModEmissionYield_0/SEE%MinYieldFact
 END IF
 
 
-
+EmissionYield=EmissionYieldRightNow
 print *, 'current, instant: ', total_current, 'current, mean: ',CurrentMean, 'yield: ', EmissionYield
 #if USE_MPI
 END IF
