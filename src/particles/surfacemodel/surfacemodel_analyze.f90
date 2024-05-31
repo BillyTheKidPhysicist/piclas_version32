@@ -519,6 +519,7 @@ END IF
 
 !add slow acting integral feedback first
 NewYield=EmissionYieldRightNow+IntegralDeltaYield
+print *, 'here 1',NewYield
 IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
   NewYield=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
@@ -529,6 +530,7 @@ END IF
 
 !add fast acting proportional is there is any "room" to do so. Update this to the final value
 NewYield=NewYield+ProportionalDeltaYield
+print *, 'here 2',NewYield
 IF(NewYield.GT.SEE%SurfModEmissionYield_0)THEN !if yield is too large, set to default value
   EmissionYieldRightNow=SEE%SurfModEmissionYield_0
 ELSE IF(NewYield.LT.0)THEN !if yield is negative
@@ -543,6 +545,7 @@ END IF
 
 
 EmissionYield=EmissionYieldRightNow
+print *, 'yield facts', ProportionalDeltaYield,IntegralDeltaYield
 print *, 'current, instant: ', total_current, 'current, mean: ',CurrentMean, 'yield: ', EmissionYield,EmissionYieldRightNow
 #if USE_MPI
 END IF
